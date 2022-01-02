@@ -1,0 +1,346 @@
+---
+title: "Readiness to Train Report"
+output:
+  flexdashboard::flex_dashboard:
+  social: menu
+  source_code: embed 
+runtime: shiny
+
+---
+
+u14s 
+===================================== 
+
+```{r global, include=FALSE}
+library(flexdashboard)
+packages = c("googlesheets4", "tidyverse", "dplyr", "ggplot2", "lubridate", "formattable", "DT", "ggpubr")
+lapply(packages, library, character.only = TRUE, warn.conflicts = FALSE)
+
+ART <- read_csv("ART_21_22.csv")
+Names<-ART$ID
+Names<-unique(Names)
+Comments<-ART[,c("ID","Week","Comment")]
+
+Today_ART<-ART %>% filter(Week == c("49"), Day==("Monday"))
+
+ART_14<-ART %>% filter(Team == c("u14s"))
+Today_14<-Today_ART %>% filter(Team == c("u14s"))
+ART_15<-ART %>% filter(Team == c("u15s"))
+Today_15<-Today_ART %>% filter(Team == c("u15s"))
+ART_16<-ART %>% filter(Team == c("u16s"))
+Today_16<-Today_ART %>% filter(Team == c("u16s"))
+
+ART_T_all<-formattable(Today_ART)
+ART_T_14<-formattable(Today_14)
+ART_T_15<-formattable(Today_15)
+ART_T_16<-formattable(Today_16)
+
+# convert ART rating to numbers 
+
+ART_num <- ART %>% 
+  mutate_at(c("Soreness","Mood","Hydration", "School"), funs(recode(., "Very, very poor" = 1, "Very poor" = 2, "Poor" = 3, "Moderate" = 4, "Good" = 5, "Very good" = 6, "Very, very good" = 7, .default = NaN)))
+
+ART_num_14<-ART_num %>% filter(Team == c("u14s"))
+ART_num_15<-ART_num %>% filter(Team == c("u15s"))
+ART_num_16<-ART_num %>% filter(Team == c("u16s"))
+
+a<-ggscatter(ART_num_14, x = "Date", y = "Soreness") + 
+  geom_point(colour = "grey") + ylim(1, 7) +
+  geom_smooth(method=loess, se = TRUE) +
+  facet_wrap(~ID)+
+  ggtitle("Soreness") +
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                                   size=10, angle=45))
+
+b<-ggscatter(ART_num_14, x = "Date", y = "Mood") + 
+  geom_point(colour = "grey") + ylim(1, 7) +
+  geom_smooth(method=loess, se = TRUE) +
+  facet_wrap(~ID)+
+  ggtitle("Mood") +
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                                   size=10, angle=45))
+
+c<-ggscatter(ART_num_15, x = "Date", y = "Soreness") + 
+  geom_point(colour = "grey") + ylim(1, 7) +
+  geom_smooth(method=loess, se = TRUE) +
+  facet_wrap(~ID)+
+  ggtitle("Soreness") +
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                                   size=10, angle=45))
+
+d<-ggscatter(ART_num_15, x = "Date", y = "Mood") + 
+  geom_point(colour = "grey") + ylim(1, 7) +
+  geom_smooth(method=loess, se = TRUE) +
+  facet_wrap(~ID)+
+  ggtitle("Mood") +
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                                   size=10, angle=45))
+
+e<-ggscatter(ART_num_16, x = "Date", y = "Soreness") + 
+  geom_point(colour = "grey") + ylim(1, 7) +
+  geom_smooth(method=loess, se = TRUE) +
+  facet_wrap(~ID)+
+  ggtitle("Soreness") +
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                                   size=10, angle=45))
+
+f<-ggscatter(ART_num_16, x = "Date", y = "Mood") + 
+  geom_point(colour = "grey") + ylim(1, 7) +
+  geom_smooth(method=loess, se = TRUE) +
+  facet_wrap(~ID)+
+  ggtitle("Mood") +
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                                   size=10, angle=45))
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Under 14s Table
+
+
+See below for players who might be scoring low on their daily monitoring, please make sure you speak to any player who is struggling: 
+
+
+
+```{r, echo = FALSE}
+ #Filter Data and then Plot
+
+ui <- basicPage(
+    sliderInput(inputId = "week", label = "Select Week", min = 0, max = 52, value = 1),
+    selectInput(inputId = "day",
+                label = "Choose Day",
+                list("Monday","Tuesday", "Wednesday","Thursday","Saturday")),
+    dataTableOutput("table")
+)
+
+
+server <- function(input, output, session) {    
+data <- reactive({
+        req(input$week)
+        ART_14 <- ART_14 %>% filter(Week %in% input$week,Day%in% input$day) 
+    })
+    
+    #Plot 
+    output$table <- renderDataTable(data())
+}
+
+
+
+shinyApp(ui = ui, server = server)
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Soreness over time
+
+```{r}
+a
+```
+
+### Mood over time
+
+```{r}
+b
+```
+
+u15s 
+===================================== 
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+### Under 15s Table
+
+
+See below for players who might be scoring low on their daily monitoring, please make sure you speak to any player who is struggling: 
+
+
+
+```{r, echo = FALSE}
+ #Filter Data and then Plot
+
+ui <- basicPage(
+    sliderInput(inputId = "week", label = "Select Week", min = 0, max = 52, value = 1),
+    selectInput(inputId = "day",
+                label = "Choose Day",
+                list("Monday","Tuesday", "Wednesday","Thursday","Saturday")),
+    dataTableOutput("table")
+)
+
+
+server <- function(input, output, session) {    
+data <- reactive({
+        req(input$week)
+        ART_15 <- ART_15 %>% filter(Week %in% input$week,Day%in% input$day) 
+    })
+    
+    #Plot 
+    output$table <- renderDataTable(data())
+}
+
+
+
+shinyApp(ui = ui, server = server)
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+
+### Soreness over time
+
+```{r}
+c
+```
+
+### Mood over time
+
+```{r}
+d
+```
+
+
+u16s 
+===================================== 
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Under 16s Table
+
+
+See below for players who might be scoring low on their daily monitoring, please make sure you speak to any player who is struggling: 
+
+
+```{r, echo = FALSE}
+ #Filter Data and then Plot
+
+ui <- basicPage(
+     sliderInput(inputId = "week", label = "Select Week", min = 0, max = 52, value = 1
+  ),
+    selectInput(inputId = "day",
+                label = "Choose Day",
+                list("Monday","Tuesday", "Wednesday","Thursday","Saturday")),
+    dataTableOutput("table")
+)
+
+
+server <- function(input, output, session) {    
+data <- reactive({
+        req(input$week)
+        ART_15 <- ART_15 %>% filter(Week %in% input$week,Day%in% input$day) 
+    })
+    
+    #Plot 
+    output$table <- renderDataTable(data())
+}
+
+
+
+shinyApp(ui = ui, server = server)
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Soreness over time
+
+```{r}
+e
+```
+
+### Mood over time
+
+```{r}
+f
+```
+
+Individual plot
+===================================== 
+
+
+Column {.sidebar}
+--------------------------------------------------
+
+Choose player initials and the item you wish to visualize.
+
+```{r}
+
+    selectInput(inputId = "item",
+                label = "Choose Item",
+                list("Soreness","Mood", "Hydration", "School"))
+
+    selectInput(inputId = "id",
+                label = "Choose Player",
+                as.list(Names, sorted= TRUE ))
+    
+
+```
+
+Column
+--------------------------------------------------
+
+### Individual Player Plot
+
+```{r, echo = FALSE}
+#Plot 
+ data <- reactive({
+        req(input$id)
+        df <- ART_num %>% filter(ID %in% input$id) 
+    })
+    
+    
+      #Plot 
+  renderPlot({ggscatter(data(), x = "Date", y = input$item) + 
+  geom_point(colour = "blue") + ylim(1, 7) +
+  geom_smooth(method=loess, se = TRUE) +
+  ggtitle("Soreness") 
+})
+
+
+  
+```
+
+Comments
+===================================== 
+
+
+Column {.sidebar}
+--------------------------------------------------
+
+Choose player initials.
+
+
+```{r, echo = FALSE}
+
+
+    sliderInput(inputId = "week", label = "Select Week", min = 0, max = 52, value = c(1, 52)
+  )
+   selectInput(inputId = "id2",
+                label = "Choose Player",
+                as.list(Names, sorted= TRUE ))
+   
+
+
+```
+
+Column
+--------------------------------------------------
+ 
+ ### Individual player comments
+ 
+```{r, echo = FALSE}
+  
+data2 <- reactive({
+        req(input$week)
+        df2 <- Comments %>% filter(Week >= input$week[1] & Week <= input$week[2], ID %in% input$id2)
+    })
+    
+    renderDataTable(data2())
+    
+  
+```
+
+
